@@ -1,0 +1,47 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: laravel
+  labels:
+    app: laravel
+    tier: frontend
+spec:
+  replicas: 4
+  selector:
+    matchLabels:
+      app: laravel
+  template:
+    metadata:
+      labels:
+        app: laravel
+        tier: frontend
+    spec:
+      containers:
+        - name: laravel
+          image: ryzen28/laravel:latest
+          ports:
+            - containerPort: 80
+          env:
+            - name: DB_CONNECTION
+              value: mongodb
+            - name: DB_HOST
+              value: mongo-service
+            - name: DB_DATABASE
+              value: admin
+            - name: DB_USERNAME
+              value: admin
+            - name: DB_PASSWORD
+              value: admin
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: laravel-service
+spec:
+  type: NodePort
+  selector:
+    app: laravel
+  ports:
+    - port: 80
+      targetPort: 80
+      nodePort: 30065
